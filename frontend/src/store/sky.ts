@@ -1,7 +1,23 @@
-import { ref, reactive, computed } from 'vue'
+import { ref, reactive, computed, watch } from 'vue'
 import { defineStore } from 'pinia'
 import { STARS, CONSTELLATIONS } from '../data/stars'
 import type { Star } from '../types'
+
+const STORAGE_KEY = 'sky-constellation-visibility'
+
+function loadVisibility(): Record<string, boolean> {
+  const defaults = Object.fromEntries(CONSTELLATIONS.map(c => [c.name, true]))
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY)
+    if (saved) {
+      const parsed = JSON.parse(saved)
+      return { ...defaults, ...parsed }
+    }
+  } catch (e) {
+    // ignore parse errors
+  }
+  return defaults
+}
 
 export const useSkyStore = defineStore('sky', () => {
   const viewDate = ref(new Date())
@@ -15,8 +31,18 @@ export const useSkyStore = defineStore('sky', () => {
   const searchQuery = ref('')
   const latitude = ref(39.9)
 
-  const constellationVisibility = reactive<Record<string, boolean>>(
-    Object.fromEntries(CONSTELLATIONS.map(c => [c.name, true]))
+  const constellationVisibility = reactive<Record<string, boolean>>(loadVisibility())
+
+  watch(
+    () => ({ ...constellationVisibility }),
+    (val) => {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(val))
+      } catch (e) {
+        // ignore storage errors
+      }
+    },
+    { deep: true }
   )
 
   function isConstellationVisible(name: string): boolean {
