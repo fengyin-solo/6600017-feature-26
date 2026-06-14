@@ -1,4 +1,4 @@
-import { ref, computed } from 'vue'
+import { ref, reactive, computed } from 'vue'
 import { defineStore } from 'pinia'
 import { STARS, CONSTELLATIONS } from '../data/stars'
 import type { Star } from '../types'
@@ -13,7 +13,15 @@ export const useSkyStore = defineStore('sky', () => {
   const showGrid = ref(true)
   const selectedStar = ref<Star | null>(null)
   const searchQuery = ref('')
-  const latitude = ref(39.9) // Beijing default
+  const latitude = ref(39.9)
+
+  const constellationVisibility = reactive<Record<string, boolean>>(
+    Object.fromEntries(CONSTELLATIONS.map(c => [c.name, true]))
+  )
+
+  function isConstellationVisible(name: string): boolean {
+    return showConstLines.value && constellationVisibility[name]
+  }
 
   const localSiderealTime = computed(() => {
     const d = viewDate.value
@@ -73,6 +81,6 @@ export const useSkyStore = defineStore('sky', () => {
     viewDate, zoom, panX, panY, showLabels, showConstLines, showGrid,
     selectedStar, searchQuery, latitude, localSiderealTime, filteredStars,
     projectStar, starRadius, spectralColor, selectStar,
-    STARS, CONSTELLATIONS
+    STARS, CONSTELLATIONS, constellationVisibility, isConstellationVisible
   }
 })

@@ -61,9 +61,12 @@
 
       <!-- Constellation list -->
       <div class="text-xs">
-        <h4 class="text-gray-400 mb-1">可见星座</h4>
-        <div v-for="c in store.CONSTELLATIONS" :key="c.name" class="py-1 text-gray-300">
-          {{ c.nameCn }} <span class="text-gray-500">({{ c.name }})</span>
+        <h4 class="text-gray-400 mb-1">星座显隐</h4>
+        <div v-for="c in store.CONSTELLATIONS" :key="c.name"
+          class="flex items-center gap-2 py-1 text-gray-300">
+          <input type="checkbox" v-model="store.constellationVisibility[c.name]" />
+          <span>{{ c.nameCn }}</span>
+          <span class="text-gray-500">({{ c.name }})</span>
         </div>
       </div>
 

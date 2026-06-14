@@ -60,9 +60,10 @@ function draw() {
 
   // constellation lines
   if (store.showConstLines) {
-    ctx.strokeStyle = 'rgba(100,180,255,0.4)'
-    ctx.lineWidth = 1.5
     for (const c of store.CONSTELLATIONS) {
+      if (!store.isConstellationVisible(c.name)) continue
+      ctx.strokeStyle = 'rgba(100,180,255,0.4)'
+      ctx.lineWidth = 1.5
       for (const [i, j] of c.lines) {
         const s1 = store.STARS[i], s2 = store.STARS[j]
         const [x1, y1] = store.projectStar(s1.ra, s1.dec, cx, cy, scale)
@@ -125,6 +126,7 @@ function draw() {
     ctx.fillStyle = 'rgba(100,180,255,0.8)'
     ctx.font = `bold ${12 * store.zoom}px system-ui`
     for (const c of store.CONSTELLATIONS) {
+      if (!store.isConstellationVisible(c.name)) continue
       const midStar = store.STARS[c.stars[0]]
       const [x, y] = store.projectStar(midStar.ra, midStar.dec, cx, cy, scale)
       if (x < -500) continue
